@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Invitación Especial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: #c9a1a1;
+      font-family: 'Playfair Display', 'Georgia', 'Times New Roman', Times, serif;
+      color: #4b3f2e;
+    }
+    .grabimg {
+      width: 450px;
+      max-width: 90vw;
+      height: auto;
+      display: block;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      cursor: grab;
+      position: relative;
+      pointer-events: auto;
+      transition: transform 1s cubic-bezier(.4,0,.2,1);
+    }
+    .media {
+      width: 450px;
+      max-width: 90vw;
+      height: auto;
+      display: block;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      cursor: pointer;
+      position: relative;
+      pointer-events: auto;
+      transition: transform 1s cubic-bezier(.4,0,.2,1);
+    }
+    .media.move-slow {
+      transform: translate(60px, 30px) scale(1.05) rotate(8deg);
+      transition: transform 10s cubic-bezier(.4,0,.2,1);
+      z-index: 10;
+    }
+    .media.move-fast {
+      transform: translate(-120px, -40px) scale(1.05) rotate(-15deg);
+      transition: transform 0.1s cubic-bezier(.6,0,.9,1);
+      z-index: 10;
+    }
+
+    .countdown-container {
+      position: absolute;
+      top: 20vh;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      border-radius: 16px;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #613d2a;
+      letter-spacing: 2px;
+      padding: 7px 0 3px 0;
+      z-index: 2;
+      pointer-events: none;
+      display: block;
+    }
+    .countdown-flex {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 28px;
+      margin-bottom: 2px;
+    }
+    .countdown-segment {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 48px;
+    }
+    .countdown-number {
+      font-size: 1.5rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: #bf852e;
+      line-height: 1.1;
+    }
+    .countdown-label {
+      font-size: 1rem;
+      color: #bf852e;
+      margin-top: 2px;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+    .envelope-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+    }
+    .google-pass-link {
+      width: 450px;
+      max-width: 90vw;
+      display: block;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      cursor: pointer;
+      pointer-events: auto;
+      position: relative;
+    }
+    .google-pass-link video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .location-icon {
+      position: absolute;
+      left: 50%;
+      top: 84%;
+      transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.85);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 15;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      cursor: pointer;
+      transition: background 0.2s;
+      border: 2px solid #bf852e;
+    }
+    .location-icon:hover {
+      background: #ffe5b2;
+    }
+    .location-icon svg {
+      width: 28px;
+      height: 28px;
+      fill: #bf852e;
+      display: block;
+    }
+    .whatsapp-link {
+      width: 450px;
+      max-width: 90vw;
+      display: block;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      cursor: pointer;
+      pointer-events: auto;
+      border: none;
+      position: relative;
+      z-index: 1;
+      transition: transform 0.4s cubic-bezier(.6,0,.9,1);
+    }
+    .whatsapp-link.rapid-show {
+      z-index: 20;
+      transform: translate(0px, -60px) scale(1.05) rotate(8deg);
+      transition: transform 0.4s cubic-bezier(.6,0,.9,1);
+    }
+    .whatsapp-link img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: none;
+    }
+
+    /* Volumen (audio) icon style */
+    .volume-icon {
+      position: fixed;
+      bottom: 28px;
+      right: 36px;
+      background: rgba(255,255,255,0.95);
+      border: 2px solid #bf852e;
+      border-radius: 50%;
+      width: 54px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 100;
+      cursor: pointer;
+      transition: background 0.3s, box-shadow 0.3s;
+      outline: none;
+    }
+    .volume-icon svg {
+      width: 32px;
+      height: 32px;
+      fill: #bf852e;
+      display: block;
+      transition: fill 0.2s;
+    }
+    .volume-icon.active {
+      background: #ffe4b2;
+      box-shadow: 0 4px 16px rgba(191,133,46,0.14),0 0 0 4px #ffe3b1;
+      border-color: #ffb100;
+    }
+    .volume-icon.active svg {
+      fill: #ffb100;
+    }
+    .volume-icon:active {
+      background: #ffefc6;
+    }
+  </style>
+  <!-- Google Fonts for Playfair Display -->
+  <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="envelope-container" id="envelope-container">
+    <div style="position:relative; width:450px; max-width:90vw;">
+      <img src="1.jpg" alt="Sobre" class="media" id="img1">
+      <div class="countdown-container" id="countdown-container">
+        <div class="countdown-flex" id="countdown-flex">
+          <!-- JS will fill numbers here -->
+        </div>
+      </div>
+    </div>
+    <img src="2.jpg" alt="Sobre" class="grabimg" id="img2">
+    <img src="3.jpg" alt="Sobre" class="grabimg" id="img3">
+    <!-- Image 4: Google Pass link with Location Icon -->
+    <div style="position:relative; width:450px; max-width:90vw;">
+      <a href="https://www.google.com/maps/place/Casa+Konna+Oficial/@11.1015169,-74.2247815,17z/data=!3m1!4b1!4m6!3m5!1s0x8ef45734811cc2e9:0xe136b6f350968e6e!8m2!3d11.1015169!4d-74.2222066!16s%2Fg%2F11tpbkg7fk?entry=ttu&g_ep=EgoyMDI1MDUxMi4wIKXMDSoJLDEwMjExNDU1SAFQAw%3D%3D"
+        target="_blank" class="google-pass-link" id="google-pass-link">
+        <video 
+          src="44.mp4" 
+          autoplay
+          loop
+          muted
+          playsinline
+        ></video>
+      </a>
+      <!-- Location icon over video at bottom center -->
+      <div class="location-icon" id="location-icon" title="Ver ubicación">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
+        </svg>
+      </div>
+    </div>
+    <img src="5.jpg" alt="Sobre" class="grabimg" id="img5">
+    <img src="6.jpg" alt="Sobre" class="media" id="img6">
+    <img src="8.jpg" alt="Sobre" class="grabimg" id="img8">
+    <!-- Image 7: WhatsApp link -->
+    <a
+      href="https://wa.me/573013684699"
+      target="_blank"
+      class="whatsapp-link"
+      id="whatsapp-link"
+    >
+      <img src="7.jpg" alt="WhatsApp" id="img7"/>
+    </a>
+  </div>
+  <a href="https://www.tickcounter.com/countdown/7329808/my-countdown" target="_blank" class="reloj-link"></a>
+  <audio id="click-sound" src="song.mp3" preload="auto"></audio>
+  <!-- Volume icon -->
+  <button class="volume-icon" id="volume-icon" title="Activar/desactivar música">
+    <!-- Default: music on -->
+    <svg id="volume-on" viewBox="0 0 24 24">
+      <path d="M3 9v6h4l5 5V4l-5 5H3zm13.5 3c0-2.5-1.5-4.71-3.5-5.65v2.13c1.2.57 2 1.77 2 3.12s-.8 2.55-2 3.12v2.13c2-.94 3.5-3.15 3.5-5.65z"/>
+    </svg>
+    <svg id="volume-off" viewBox="0 0 24 24" style="display:none">
+      <path d="M16.5 12c0-2.5-1.5-4.71-3.5-5.65v2.13c1.2.57 2 1.77 2 3.12 0 .41-.07.81-.18 1.18l1.57 1.57c.36-.7.61-1.53.61-2.4zM19 12c0 2.27-.7 4.36-1.89 6.13l1.49 1.49C20.16 17.76 21 15.02 21 12c0-2.8-.68-5.41-1.88-7.62l-1.49 1.49C18.3 7.64 19 9.73 19 12zm-15.41-.41l1.41 1.41L9 9.83V15l4.17 4.17 1.41 1.41L21.59 2.59 20.17 1.17l-18 18L3.59 21.59z"/>
+    </svg>
+  </button>
+  <script>
+    // --- Countdown logic (unchanged) ---
+    function pad(val) { return val.toString().padStart(2, '0'); }
+    function updateCountdown() {
+      const flex = document.getElementById('countdown-flex');
+      // FECHA META: 2 de agosto 2025 00:00:00 hora Colombia (UTC-5)
+      const nowUTC = new Date();
+      const options = { timeZone: 'America/Bogota', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+      const colombiaNowParts = new Intl.DateTimeFormat('en-US', options).formatToParts(nowUTC);
+      const y = Number(colombiaNowParts.find(p=>p.type==='year').value);
+      const m = Number(colombiaNowParts.find(p=>p.type==='month').value);
+      const d = Number(colombiaNowParts.find(p=>p.type==='day').value);
+      const h = Number(colombiaNowParts.find(p=>p.type==='hour').value);
+      const min = Number(colombiaNowParts.find(p=>p.type==='minute').value);
+      const s = Number(colombiaNowParts.find(p=>p.type==='second').value);
+      const todayColombia = new Date(Date.UTC(y, m-1, d));
+      const targetColombia = new Date(Date.UTC(2025, 7, 2)); // Agosto = 7 JS
+      const days = Math.round((targetColombia - todayColombia) / (1000*60*60*24));
+      const nowColombia = new Date(Date.UTC(y, m-1, d, h, min, s));
+      const targetDateTime = new Date(Date.UTC(2025, 7, 2, 0, 0, 0));
+      let diff = targetDateTime - nowColombia;
+      if (diff <= 0) {
+        flex.innerHTML = `<div style="width:100%;font-size:1.3rem;">¡El gran día ha llegado!</div>`;
+        return;
+      }
+      const hours = Math.floor((diff / (1000*60*60)) % 24);
+      const minutes = Math.floor((diff / (1000*60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      flex.innerHTML = `
+        <div class="countdown-segment">
+          <span class="countdown-number">${pad(days)}</span>
+          <span class="countdown-label">Dias</span>
+        </div>
+        <div class="countdown-segment">
+          <span class="countdown-number">${pad(hours)}</span>
+          <span class="countdown-label">Horas</span>
+        </div>
+        <div class="countdown-segment">
+          <span class="countdown-number">${pad(minutes)}</span>
+          <span class="countdown-label">Minutos</span>
+        </div>
+        <div class="countdown-segment">
+          <span class="countdown-number">${pad(seconds)}</span>
+          <span class="countdown-label">Segundos</span>
+        </div>
+      `;
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // --- Custom UI logic as requested ---
+    // 0. Song logic
+    const audio = document.getElementById('click-sound');
+    let isPlaying = false;
+    let userHasStarted = false;
+
+    // 4. Volumen icon logic
+    const volumeIcon = document.getElementById('volume-icon');
+    const svgOn = document.getElementById('volume-on');
+    const svgOff = document.getElementById('volume-off');
+    function setVolumeIcon(on) {
+      if (on) {
+        volumeIcon.classList.add('active');
+        svgOn.style.display = '';
+        svgOff.style.display = 'none';
+      } else {
+        volumeIcon.classList.remove('active');
+        svgOn.style.display = 'none';
+        svgOff.style.display = '';
+      }
+    }
+    function playMusic() {
+      if (!isPlaying) {
+        audio.play();
+        isPlaying = true;
+        setVolumeIcon(true);
+      }
+    }
+    function pauseMusic() {
+      if (isPlaying) {
+        audio.pause();
+        isPlaying = false;
+        setVolumeIcon(false);
+      }
+    }
+    audio.addEventListener('ended', () => {
+      isPlaying = false;
+      setVolumeIcon(false);
+    });
+    volumeIcon.addEventListener('click', () => {
+      if (!userHasStarted) { // For browser autoplay policy
+        audio.play();
+        isPlaying = true;
+        setVolumeIcon(true);
+        userHasStarted = true;
+        return;
+      }
+      if (isPlaying) {
+        pauseMusic();
+      } else {
+        playMusic();
+      }
+    });
+
+    // --- MODIFICATIONS REQUESTED ---
+    // 1. When click 1.jpg: play music and scroll down to 2.jpg
+    const img1 = document.getElementById('img1');
+    const img2 = document.getElementById('img2');
+    img1.addEventListener('click', () => {
+      userHasStarted = true;
+      playMusic();
+      // Scroll to 2.jpg, align to center
+      setTimeout(() => {
+        img2.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 80);
+      // Optionally, keep the nice slow movement effect:
+      img2.classList.add('move-slow');
+      setTimeout(() => img2.classList.remove('move-slow'), 1800);
+    });
+
+    // 2. Location icon on video (Google Pass, 4th image)
+    const locationIcon = document.getElementById('location-icon');
+    const googleLink = document.getElementById('google-pass-link');
+    locationIcon.addEventListener('click', (e) => {
+      window.open(googleLink.href, "_blank");
+      e.stopPropagation();
+    });
+
+    // 3. Click 6.jpg -> move quickly to 8.jpg
+    const img6 = document.getElementById('img6');
+    const img8 = document.getElementById('img8');
+    img6.addEventListener('click', () => {
+      setTimeout(() => {
+        img8.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 30);
+      // Optionally, add a fast effect to img8 for fun
+      img8.classList.add('move-fast');
+      setTimeout(() => img8.classList.remove('move-fast'), 350);
+    });
+
+    // 4. Highlight volume icon if music is on at load (try autoplay, will fail if not user-initiated)
+    setVolumeIcon(false);
+  </script>
+</body>
+</html>
